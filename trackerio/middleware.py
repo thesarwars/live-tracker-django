@@ -16,11 +16,11 @@ class JWTAuthMiddleware(BaseMiddleware):
 
     async def __call__(self, scope, receive, send):
         query_string = scope.get("query_string", b"").decode()
-        print("Query String:", query_string)
-        query_params = parse_qs(query_string)
-        print("Query Params:", query_params)
-        token = query_params.get("token")[0]
-        print("Token:", token)
+        # print("Query String:", query_string)
+        token = parse_qs(query_string).get("token")[0]
+        print("Query Params:", token)
+        # token = query_params[0] if query_params else None
+        # print("Token:", token)
 
         if token:
             try:

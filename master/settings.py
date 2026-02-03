@@ -135,7 +135,7 @@ REST_FRAMEWORK = {
     # ],
     # "DEFAULT_THROTTLE_RATES": {"anon": "60/minute", "user": "120/minute"},
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
-    "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
+    # "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
     # "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "PAGE_SIZE": 10,
 }
@@ -179,3 +179,12 @@ CSRF_TRUSTED_ORIGINS = [
     "https://gharmisch.jumatechs.xyz",
     "http://127.0.0.1:8000",
 ]
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}

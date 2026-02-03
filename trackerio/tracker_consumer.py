@@ -13,7 +13,7 @@ class TrackerConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         print("data in scope", self.scope)
         self.user = self.scope.get("user", AnonymousUser())
-        self.receiver_id = self.scope["url_route"]["kwargs"]["receiver_id"]
+        self.rider_id = self.scope["url_route"]["kwargs"]["rider_id"]
         self.order_id = self.scope["url_route"]["kwargs"]["order_id"]
         
         if self.user.is_anonymous:
@@ -24,7 +24,7 @@ class TrackerConsumer(AsyncWebsocketConsumer):
             await self.close()
             return
         
-        key = f"order:{self.order_id}:location"
+        key = f"order_{self.order_id}_location"
         self.group_name = key
         await self.channel_layer.group_add(self.group_name, self.channel_name)
         await self.accept()
@@ -37,12 +37,12 @@ class TrackerConsumer(AsyncWebsocketConsumer):
         latitude = data.get("latitude")
         longitude = data.get("longitude")
         
-        # receiver = await sync_to_async(User.objects.get)(id=self.receiver_id)
+        # receiver = await sync_to_async(User.objects.get)(id=self.rider_id)
         
         
         if latitude is not None and longitude is not None:
             location_data = {
-                "receiver_id": self.receiver_id,
+                "rider_id": self.rider_id,
                 "order_id": self.order_id,
                 "latitude": latitude,
                 "longitude": longitude,
@@ -74,7 +74,7 @@ class CustomerTrackerConsumer(AsyncWebsocketConsumer):
             await self.close()
             return
 
-        key = f"order:{self.order_id}:location"
+        key = f"order_{self.order_id}_location"
         self.group_name = key
         await self.channel_layer.group_add(self.group_name, self.channel_name)
         await self.accept()
