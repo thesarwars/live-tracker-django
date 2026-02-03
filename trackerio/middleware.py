@@ -18,7 +18,7 @@ class JWTAuthMiddleware(BaseMiddleware):
         query_string = scope.get("query_string", b"").decode()
         # print("Query String:", query_string)
         token = parse_qs(query_string).get("token")[0]
-        print("Query Params:", token)
+        # print("Query Params:", token)
         # token = query_params[0] if query_params else None
         # print("Token:", token)
 
@@ -29,7 +29,7 @@ class JWTAuthMiddleware(BaseMiddleware):
                     settings.SECRET_KEY,
                     algorithms=["HS256"],
                 )
-                print("Payload:", payload)
+                # print("Payload:", payload)
                 user = await sync_to_async(self.get_user)(payload)
                 scope["user"] = user
             except Exception as e:

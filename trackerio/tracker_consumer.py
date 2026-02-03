@@ -11,7 +11,7 @@ from accountsio.choices import UserTypeChoices
 
 class TrackerConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        print("data in scope", self.scope)
+        # print("data in scope", self.scope)
         self.user = self.scope.get("user", AnonymousUser())
         self.rider_id = self.scope["url_route"]["kwargs"]["rider_id"]
         self.order_id = self.scope["url_route"]["kwargs"]["order_id"]
@@ -24,13 +24,13 @@ class TrackerConsumer(AsyncWebsocketConsumer):
             await self.close()
             return
         
-        key = f"order_{self.order_id}_location"
-        self.group_name = key
-        await self.channel_layer.group_add(self.group_name, self.channel_name)
+        # Rider should not receive broadcast messages, only send into the group
+        self.group_name = f"order_{self.order_id}_location"
         await self.accept()
         
     async def disconnect(self, close_code):
-        await self.channel_layer.group_discard(self.group_name, self.channel_name)
+        # Rider was never added to the group; nothing to discard
+        return
         
     async def receive(self, text_data):
         data = json.loads(text_data)
@@ -56,13 +56,13 @@ class TrackerConsumer(AsyncWebsocketConsumer):
             )
         
     async def send_location(self, event):
-        location_data = event["location_data"]
-        await self.send(text_data=json.dumps(location_data))
+        # location_data = event["location_data"]
+        await self.send(text_data=json.dumps(event["location_data"]))
 
 
 class CustomerTrackerConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        print("customer scope", self.scope)
+        # print("customer scope", self.scope)
         self.user = self.scope.get("user", AnonymousUser())
         self.order_id = self.scope["url_route"]["kwargs"]["order_id"]
 
@@ -74,8 +74,8 @@ class CustomerTrackerConsumer(AsyncWebsocketConsumer):
             await self.close()
             return
 
-        key = f"order_{self.order_id}_location"
-        self.group_name = key
+        # key = f"order_{self.order_id}_location"
+        self.group_name = f"order_{self.order_id}_location"
         await self.channel_layer.group_add(self.group_name, self.channel_name)
         await self.accept()
 
@@ -87,5 +87,5 @@ class CustomerTrackerConsumer(AsyncWebsocketConsumer):
         return
 
     async def send_location(self, event):
-        location_data = event["location_data"]
-        await self.send(text_data=json.dumps(location_data))
+        # location_data = event["location_data"]
+        await self.send(text_data=json.dumps(event["location_data"]))
